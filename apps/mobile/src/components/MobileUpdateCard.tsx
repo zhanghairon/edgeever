@@ -3,7 +3,7 @@ import * as Updates from "expo-updates";
 import { StyleSheet, View } from "react-native";
 import { ActivityIndicator, RefreshCw } from "./icons";
 import { Pressable, Text } from "./LocalizedText";
-import { useMobileLocale, getMobileCatalog } from "../lib/mobile-locale";
+import { useMobileLocale } from "../lib/mobile-locale";
 import { useMobileUpdate } from "../lib/mobile-update";
 import { useMobileTheme, resolveMobileThemeStyles } from "../lib/mobile-theme";
 
@@ -11,30 +11,33 @@ export const MobileUpdateCard = () => {
   const { resolvedLocale } = useMobileLocale();
   const { resolvedTheme } = useMobileTheme();
   const { checkForUpdate, hasUpdate, isSupported, openUpdate, status, updateKind } = useMobileUpdate();
+  const english = resolvedLocale !== "zh-CN";
   const busy = status === "checking" || status === "downloading";
   const styles = resolveMobileThemeStyles(baseStyles, resolvedTheme);
   const checkLabel = status === "checking"
-    ? getMobileCatalog(resolvedLocale).mobile.update.checking
-    : getMobileCatalog(resolvedLocale).mobile.update.checkForUpdates;
+    ? (english ? "Checking…" : "正在检查…")
+    : (english ? "Check for updates" : "检查更新");
   const openLabel = status === "downloading"
-    ? getMobileCatalog(resolvedLocale).mobile.update.downloadingUpdate
+    ? (english ? "Downloading update…" : "正在下载更新…")
     : status === "ready"
-      ? getMobileCatalog(resolvedLocale).mobile.update.restartToApply
+      ? (english ? "Restart to apply" : "重启以应用")
       : updateKind === "ota"
-        ? getMobileCatalog(resolvedLocale).mobile.update.downloadUpdate
+        ? (english ? "Download update" : "下载更新")
         : updateKind === "play"
-          ? getMobileCatalog(resolvedLocale).mobile.update.updateWithGooglePlay
-          : getMobileCatalog(resolvedLocale).mobile.update.chooseSource;
+          ? (english ? "Update with Google Play" : "通过 Google Play 更新")
+        : (english ? "Choose update source" : "选择更新渠道");
 
   return (
     <View style={styles.card}>
       <View style={styles.copy}>
-        <Text style={styles.title}>{getMobileCatalog(resolvedLocale).mobile.update.title}</Text>
+        <Text style={styles.title}>{english ? "App updates" : "应用更新"}</Text>
         <Text style={styles.description}>
-          {getMobileCatalog(resolvedLocale).mobile.update.description}
+          {english
+            ? "EdgeEver automatically checks for compatible in-app updates and newer app versions."
+            : "EdgeEver 会自动检查兼容的应用内热更新和新版应用。"}
         </Text>
         <Text style={styles.version}>
-          {getMobileCatalog(resolvedLocale).mobile.update.currentVersion}: v{Updates.runtimeVersion ?? Constants.expoConfig?.version ?? "unknown"}
+          {english ? "Current version" : "当前版本"}: v{Updates.runtimeVersion ?? Constants.expoConfig?.version ?? "unknown"}
         </Text>
       </View>
       {hasUpdate ? (
@@ -61,7 +64,7 @@ export const MobileUpdateCard = () => {
       </Pressable>
       {!isSupported ? (
         <Text style={styles.hint}>
-          {getMobileCatalog(resolvedLocale).mobile.update.releaseBuildsOnly}
+          {english ? "Available in installed release builds." : "此功能会在已安装的正式版中启用。"}
         </Text>
       ) : null}
     </View>

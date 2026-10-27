@@ -1,2 +1,0 @@
-$ bun run --cwd apps/mobile typecheck
-$ tsc -p tsconfig.json --noEmit
